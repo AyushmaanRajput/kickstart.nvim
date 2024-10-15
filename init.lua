@@ -1,11 +1,25 @@
 require 'custom.options.options'
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
+vim.opt.fileformat = 'unix'
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+-- Keymap to populate the quickfix list with TODO comments
+vim.api.nvim_set_keymap('n', '<leader>tq', ':TodoQuickFix<CR>', { noremap = true, silent = true })
+
+-- Keymap to navigate to the next item in the quickfix list
+vim.api.nvim_set_keymap('n', '<leader>qn', ':cnext<CR>', { noremap = true, silent = true })
+
+-- Keymap to navigate to the previous item in the quickfix list
+vim.api.nvim_set_keymap('n', '<leader>qp', ':cprev<CR>', { noremap = true, silent = true })
+
+-- Keymap to open the quickfix list
+vim.api.nvim_set_keymap('n', '<leader>qo', ':copen<CR>', { noremap = true, silent = true })
+
+-- Keymap to close the quickfix list
+vim.api.nvim_set_keymap('n', '<leader>qc', ':cclose<CR>', { noremap = true, silent = true })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -418,7 +432,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {},
+        ts_ls = {},
         cssls = {},
         jsonls = {},
         tailwindcss = {},
@@ -470,7 +484,21 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'glepnir/lspsaga.nvim',
+    branch = 'main',
+    config = function()
+      require('lspsaga').setup {
+        ui = {
+          border = 'rounded',
+        },
+        hover = {
+          max_width = 80,
+          wrap = true, -- This will wrap the hover text in floating windows
+        },
+      }
+    end,
+  },
   { -- Autoformat
     'stevearc/conform.nvim',
     lazy = false,
@@ -618,7 +646,8 @@ require('lazy').setup({
       }
     end,
   },
-  { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true, opts = ... },
+  -- { 'ellisonleao/gruvbox.nvim', priority = 1000, config = true, opts = ... },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -639,7 +668,7 @@ require('lazy').setup({
       -- Set your colorscheme
       -- vim.cmd 'colorscheme gruvbox' -- or any other colorscheme you use
       --vim.o.background = 'dark' -- or "light" for light mode
-      vim.cmd [[colorscheme gruvbox]]
+      vim.cmd [[colorscheme catppuccin]]
       --vim.cmd 'highlight Normal guibg=NONE ctermbg=NONE'
       vim.cmd 'highlight Normal guibg=#00000040'
       vim.cmd 'highlight NonText guibg=#00000040'
