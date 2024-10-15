@@ -152,6 +152,9 @@ require('lazy').setup({
       }
     end,
   },
+  require('lazy').setup {
+    'tpope/vim-unimpaired',
+  },
 
   -- NOTE: Plugins can specify dependencies.
   --
