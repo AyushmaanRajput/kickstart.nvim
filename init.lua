@@ -1,8 +1,6 @@
-
 -- set <space> as the leader key
 -- see `:help mapleader`
 --  note: must happen before plugins are loaded (otherwise wrong leader will be used)
-
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -65,15 +63,37 @@ vim.opt.listchars = { tab = '   ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
+vim.opt.termguicolors = true
 -- Show which line your cursor is on
 vim.opt.cursorline = true
 
+-- vim.opt.guicursor = {
+--   'n-v-c:block',
+--   'i-ci-ve:ver25',
+--   'r-cr:hor20',
+--   'o:hor50',
+--   'a:blinkwait700-blinkon400-blinkoff250',
+-- }
+vim.api.nvim_set_hl(0, 'Cursor', { fg = 'black', bg = '#00FF00' })
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 15
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+vim.keymap.set('n', ']t', function()
+  require('todo-comments').jump_next()
+end, { desc = 'Next todo comment' })
+
+vim.keymap.set('n', '[t', function()
+  require('todo-comments').jump_prev()
+end, { desc = 'Previous todo comment' })
+
+-- You can also specify a list of valid jump keywords
+
+-- vim.keymap.set('n', ']t', function()
+--   require('todo-comments').jump_next { keywords = { 'ERROR', 'WARNING' } }
+-- end, { desc = 'Next error/warning todo comment' })
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -94,6 +114,9 @@ vim.api.nvim_set_keymap('n', '<leader>qo', ':copen<CR>', { noremap = true, silen
 
 -- Keymap to close the quickfix list
 vim.api.nvim_set_keymap('n', '<leader>qc', ':cclose<CR>', { noremap = true, silent = true })
+
+-- vim.api.nvim_set_keymap('n', '<leader>b', ':terminal build<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>b', ':vsplit | terminal build<CR>', { noremap = true, silent = true })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -153,7 +176,9 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
--- NOTE: Here is where you install your plugins.
+
+-- Load keymaps after plugins are set up
+
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
@@ -182,6 +207,7 @@ require('lazy').setup({
       },
     },
   },
+  { 'ThePrimeagen/harpoon', branch = 'harpoon2', dependencies = { 'nvim-lua/plenary.nvim' } },
   {
     'windwp/nvim-autopairs',
     config = function()
@@ -258,9 +284,6 @@ require('lazy').setup({
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
-  },
-  require('lazy').setup {
-    'tpope/vim-unimpaired',
   },
 
   -- NOTE: Plugins can specify dependencies.
@@ -556,7 +579,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        ast_grep={},
+        ast_grep = {},
         gopls = {},
         pyright = {},
         rust_analyzer = {},
@@ -824,9 +847,8 @@ require('lazy').setup({
       --vim.cmd 'highlight NonText guibg=NONE ctermbg=NONE'
     end,
   },
-
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = true } },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -941,4 +963,4 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-
+require 'custom.options.keymaps'
